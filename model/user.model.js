@@ -27,6 +27,10 @@ const userSchema = new mongoose.Schema({
         imageName: String,
         address: String
     }
-})
+    , isVarify: {
+        type: Boolean,
+        default: false
+    }
+}, { versionKey: false })
 
 export const User = mongoose.model("user", userSchema)

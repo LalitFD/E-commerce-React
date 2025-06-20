@@ -1,14 +1,8 @@
 import mongoose from "mongoose";
 
 const productSchema = new mongoose.Schema({
-    title: {
-        type: String,
-        // required: true
-    },
-    price: {
-        type: Number,
-        // required: true
-    },
+    title: String,
+    price: Number,
     description: String,
     category: String,
     discountPercentage: Number,
@@ -19,6 +13,21 @@ const productSchema = new mongoose.Schema({
     shippingInformation: String,
     availabilityStatus: String,
     returnPolicy: String,
-    thumbnail: String
+    thumbnail: String,
+
+    reviews: [
+        {
+
+
+            rating: Number,
+            comment: String,
+            date: String,
+            reviewName: String,
+            reviewEmail: String
+
+        }
+    ]
+
+
 })
 export const Product = mongoose.model("product", productSchema);
