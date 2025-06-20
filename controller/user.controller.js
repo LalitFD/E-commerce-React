@@ -20,6 +20,7 @@ export const register = async (request, response, next) => {
         password = bcrypt.hashSync(password, saltKey);
 
         let result = await User.create({ name, password, contact, email })
+
         await sendEmail(name, email);
         return response.status(201).json({ message: "user created", user: result });
 
@@ -35,13 +36,16 @@ export const login = async (request, response, next) => {
         let { email, password } = request.body;
 
         let use = await User.findOne({ email })
+
         if (!use.isVarify) return response.status(400).json({ message: "Account not varified " })
+
         if (!use) return response.status(400).json({ error: "unauthorized user | email not valid " })
+
         let status = bcrypt.compareSync(password, use.password);
         if (!status) return response.status(400).json({ error: "unathorized user | wrong Password " })
 
         else {
-            use.password = undefined;
+            use.password = undefined;  // { "password":undefined }
             response.cookie("token", generateToken(use._id, use.email))
             return response.status(200).json({ message: "Login success", use })
         }
@@ -74,8 +78,8 @@ export const sendEmail = (name, email) => {
     let transporter = nodemailer.createTransport({
         service: 'gmail',
         auth: {
-            user: process.env.mail_id,
-            pass: process.env.mail_password
+            user: process.env.mail_id,  // lalitdoriya7gmmail.com
+            pass: process.env.mail_password   // 
         }
     });
 
@@ -111,7 +115,7 @@ export const sendEmail = (name, email) => {
 
 export const userVerified = async (request, response, next) => {
     try {
-        let { email } = request.body;
+        let { email } = request.body; // doriyalalit8@gmail.com/ 
         email = email.trim().replace(/\/$/, '');
 
         console.log("Email received:", email);

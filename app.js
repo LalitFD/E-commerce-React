@@ -29,14 +29,3 @@ mongoose.connect(process.env.URL).then((result) => {
     console.log(err)
     console.log("connnection  failed")
 })
-
-
-// category   --> model
-// deleteById -->
-// fetchById  --> fetch
-// List
-//
-
-
-// product ---> category
-// Product ---> reviews 
