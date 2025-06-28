@@ -1,5 +1,6 @@
 import { request, response } from "express";
 import { Product } from "../model/product.model.js";
+import query from "express-validator"
 
 export const product = async (request, response, next) => {
     try {
@@ -27,12 +28,12 @@ export const getAllProduct = async (request, response, next) => {
 
 export const getById = async (request, response, next) => {
     try {
-        let id = request.body._id;
-        let prod = await Product.findById(id)
-        return response.status(200).json({ message: prod })
+        const { id } = request.params;
+        const product = await Product.findById({ _id: id });
+        return response.status(200).json({ product });
     } catch (err) {
         console.log(err)
-        return response.status.json({ error: "internal server error " })
+        return response.status(500).json({ error: "internal server error " })
     }
 }
 
@@ -46,5 +47,35 @@ export const delById = async (request, response, next) => {
     } catch (err) {
         console.log(err);
         return response.status(500).json({ error: "Internal server error" })
+    }
+}
+
+export const searchProduct = async (requesr, response, next) => {
+    try {
+        let { title, minPrice, maxPrice } = requesr.query;
+        let query = {};
+
+
+        if (title) {
+            query.title = { $regex: title, $options: 'i' };
+        }
+
+        if (minPrice || maxPrice) {
+            query.price = {};
+
+            if (minPrice) {
+                query.price.$gte = minPrice;
+            }
+
+            if (maxPrice) {
+                query.price.$lte = maxPrice;
+            }
+        }
+        const result = await Product.find(query);
+        return response.status(200).json({ searchResult: result });
+
+    } catch (err) {
+        console.log(err)
+        return response.status(500).json({ error: "internal server error" })
     }
 }

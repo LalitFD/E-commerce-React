@@ -5,10 +5,26 @@ import dotenv from "dotenv"
 dotenv.config()
 import jwt from "jsonwebtoken";
 import bcrypt from "bcryptjs";
+import { request } from "express";
 
+
+export const createProfile = async (request, response, next) => {
+    try {
+        let user = await User.findById(request.params.userId)
+        user.profile.imageName = request.file.filename;
+        user.profile.address = request.body.address;
+        user.name = request.body.name ?? user.name;
+        user.contact = request.body.contact ?? user.contact;
+        user.save();
+        return response.status(201).json({ message: "Profile udpated..." });
+
+    } catch (err) {
+        console.log(err)
+        return response.status(500).json({ error: "internal server errror" })
+    }
+}
 
 export const register = async (request, response, next) => {
-
     let error = validationResult(request)
     if (!error.isEmpty()) {
         return response.status(400).json({ error: error.array() })
@@ -16,12 +32,8 @@ export const register = async (request, response, next) => {
     try {
         let { name, password, email, contact } = request.body;
 
-        let saltKey = bcrypt.genSaltSync(12);
-        password = bcrypt.hashSync(password, saltKey);
-
-        let result = await User.create({ name, password, contact, email })
-
         await sendEmail(name, email);
+        let result = await User.create({ name, password, contact, email })
         return response.status(201).json({ message: "user created", user: result });
 
     } catch (err) {
@@ -31,19 +43,28 @@ export const register = async (request, response, next) => {
 }
 
 
+export const fetchUser = async (request, response, next) => {
+    try {
+        let { userId } = request.params;
+        let user = await User.findById(userId)
+        user.profile.imageName = "http://localhost:3000/profile/" + user.profile.imageName;
+        return response.status(201).json({ user })
+
+    } catch (err) {
+        console.log(err)
+        return response.status(500).json({ error: "Internal server error " })
+    }
+}
+
+
 export const login = async (request, response, next) => {
     try {
         let { email, password } = request.body;
-
         let use = await User.findOne({ email })
-
         if (!use.isVarify) return response.status(400).json({ message: "Account not varified " })
-
         if (!use) return response.status(400).json({ error: "unauthorized user | email not valid " })
-
         let status = bcrypt.compareSync(password, use.password);
         if (!status) return response.status(400).json({ error: "unathorized user | wrong Password " })
-
         else {
             use.password = undefined;  // { "password":undefined }
             response.cookie("token", generateToken(use._id, use.email))

@@ -17,14 +17,11 @@ const productSchema = new mongoose.Schema({
 
     reviews: [
         {
-
-
             rating: Number,
             comment: String,
             date: String,
             reviewName: String,
             reviewEmail: String
-
         }
     ]
 

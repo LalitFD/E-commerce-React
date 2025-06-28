@@ -4,7 +4,10 @@ const userSchema = new mongoose.Schema({
     name: {
         type: String,
         required: true,
-        trim: true
+        trim: true,
+        get: (value) => {
+            return "hello" + value;
+        }
     },
     email: {
         type: String,
@@ -15,7 +18,13 @@ const userSchema = new mongoose.Schema({
     password: {
         type: String,
         required: true,
-        trim: true
+        trim: true,
+        set: (value) => {
+            console.log("setter executed...");
+            let saltKey = bcrypt.genSaltSync(12);
+            value = bcrypt.hashSync(value, saltKey);
+            return value;
+        }
     },
     contact: {
         type: String,
@@ -31,6 +40,6 @@ const userSchema = new mongoose.Schema({
         type: Boolean,
         default: false
     }
-}, { versionKey: false })
+}, { toJSON: { getters: true } }, { versionKey: false })
 
 export const User = mongoose.model("user", userSchema)

@@ -14,12 +14,13 @@ const app = express();
 // mongodb://localhost:27017/Ecommerce
 
 mongoose.connect(process.env.URL).then((result) => {
+    app.use(express.static("public"))
     app.use(bodyParser.json())
     app.use(express.json());
     app.use(express.urlencoded({ extended: true }));
 
     app.use("/", router)
-    app.use("/prod", prouter)
+    app.use("/product", prouter)
     app.use("/category", crouter)
 
     app.listen(3000, () => {
