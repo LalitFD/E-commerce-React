@@ -11,10 +11,13 @@ import { request } from "express";
 export const createProfile = async (request, response, next) => {
     try {
         let user = await User.findById(request.params.userId)
+
         user.profile.imageName = request.file.filename;
         user.profile.address = request.body.address;
+
         user.name = request.body.name ?? user.name;
         user.contact = request.body.contact ?? user.contact;
+
         user.save();
         return response.status(201).json({ message: "Profile udpated..." });
 
@@ -47,7 +50,8 @@ export const fetchUser = async (request, response, next) => {
     try {
         let { userId } = request.params;
         let user = await User.findById(userId)
-        user.profile.imageName = "http://localhost:3000/profile/" + user.profile.imageName;
+        
+        // user.profile.imageName = "http://localhost:3000/profile/" + user.profile.imageName;
         return response.status(201).json({ user })
 
     } catch (err) {

@@ -7,6 +7,7 @@ import cookieParser from "cookie-parser";
 import { router } from "./router/user.router.js";
 import { prouter } from "./router/product.router.js";
 import { crouter } from "./router/category.router.js";
+import { CCrouter } from "./router/cart.router.js";
 
 const app = express();
 
@@ -22,6 +23,7 @@ mongoose.connect(process.env.URL).then((result) => {
     app.use("/", router)
     app.use("/product", prouter)
     app.use("/category", crouter)
+    app.use("/cart", CCrouter)
 
     app.listen(3000, () => {
         console.log("server started")

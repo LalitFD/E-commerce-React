@@ -1,6 +1,7 @@
 import express from "express"
 import { register, login, userVerified, logOut, createProfile, fetchUser } from "../controller/user.controller.js";
 import { validate } from "../validate/user.validate.js";
+
 import multer from "multer";
 const upload = multer({ dest: "public/profile" })
 const router = express.Router();
